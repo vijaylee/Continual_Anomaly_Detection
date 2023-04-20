@@ -22,5 +22,3 @@ You can run the method you need by modifying the configuration file.
 
 
 
-# Continual_Anomaly_Detection
-# Continual_Anomaly_Detection
