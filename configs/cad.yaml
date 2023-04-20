@@ -1,0 +1,55 @@
+name: continual anomaly detection
+dataset:
+  name: seq-mvtec  # seq-mvtec or seq-mtd-mvtec or joint-mtd-mvtec
+  image_size: 224  # 224; revdis: 256; csflow: 768
+  num_workers: 4
+  data_incre_setting: mul # mul: 3+3+3+3+3; one: 10+1+1+1+1+1
+  n_classes_per_task: 3  # mul_class_incre: 3; one_class_incre:1. if joint: 15
+  n_tasks: 5  # mul_class_incre: 5; seq-mtd-mvtec, one_class_incre：6. if joint: 1
+  dataset_order: 1 # 1, 2, 3
+  strong_augmentation: True # strong augmentation: cutpaste, maskimg, etc.; weak augmentation: ColorJitter, RandomRotation, etc.
+  random_aug: False
+
+
+model:
+  name: vit # resnet, vit, net_csflow, net_revdis
+  pretrained: True
+  method: dne # dne, panda, cutpaste, csflow, revdis, er, der, derpp, fdr, agem, upper
+  # dne
+  fix_head: True
+  with_dne: True
+  buffer_size: 200
+  # der
+  with_embeds: True
+  # cflow
+  n_feat: 304
+  fc_internal: 1024
+  n_coupling_blocks: 4
+  clamp: 3
+  n_scales: 3
+
+train:
+  optimizer:
+    name: adam
+    weight_decay: 0.00003 # 0.00003; csflow: 0.00001
+    momentum: 0.9
+  warmup_epochs: 10
+  warmup_lr: 0
+  base_lr: 0.0001 # 0.0001; csflow: 0.0002; revdis:0.005
+  final_lr: 0
+  num_epochs: 50
+  batch_size: 32 # 32, csflow:16
+  test_epochs: 10
+  alpha: 0.4
+  beta: 0.5
+  num_classes: 2
+
+eval:
+  eval_classifier: density # density, head
+  batch_size: 32 # 32, revdis:1; csflow:16
+  visualization: False
+
+
+
+
+
