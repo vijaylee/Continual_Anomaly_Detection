@@ -1,8 +1,8 @@
 # Continual Anomaly Detection
 
-This project contains the implementation of the following ACMMM 2022 paper: 
+Official code for ACMMM 2022 paper: 
 
-**Title:** Towards Continual Adaptation in Industrial Anomaly Detection (ACMMM 2022),  [[pdf]](https://dl.acm.org/doi/pdf/10.1145/3503161.3548232?casa_token=DjLhJL0kQl8AAAAA:AQyuwCMk4m_bNFtyfFi3YJu-lHa7-EIRrdgztanRKsf5f0535ROUoponI9gAZIrx4_PrUDjta64dNg). 
+**Title:** Towards Continual Adaptation in Industrial Anomaly Detection  [[pdf]](https://dl.acm.org/doi/pdf/10.1145/3503161.3548232?casa_token=DjLhJL0kQl8AAAAA:AQyuwCMk4m_bNFtyfFi3YJu-lHa7-EIRrdgztanRKsf5f0535ROUoponI9gAZIrx4_PrUDjta64dNg). 
 
 
 ## Datasets
