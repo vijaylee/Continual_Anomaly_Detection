@@ -18,9 +18,9 @@ model:
   # dne
   fix_head: True
   with_dne: True
-  buffer_size: 200
   # der
   with_embeds: True
+  buffer_size: 200
   # cflow
   n_feat: 304
   fc_internal: 1024
