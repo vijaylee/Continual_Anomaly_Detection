@@ -59,6 +59,7 @@ def main(args):
                 net.eval()
                 density = model.training_epoch(density, one_epoch_embeds, task_wise_mean, task_wise_cov, task_wise_train_data_nums, t)
                 eval_model(args, epoch, dataloaders_test, learned_tasks, net, density)
+                net.train()
 
         if hasattr(model, 'end_task'):
             model.end_task(train_dataloader)
