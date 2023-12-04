@@ -18,6 +18,7 @@ def t2np(tensor):
 def csflow_eval(args, epoch, dataloaders_test, learned_tasks, net):
     all_roc_auc = []
     eval_task_wise_scores, eval_task_wise_labels = [], []
+    task_num = 0
     for idx, (dataloader_test, learned_task) in enumerate(zip(dataloaders_test, learned_tasks)):
         test_z, test_labels = list(), list()
 
@@ -36,14 +37,15 @@ def csflow_eval(args, epoch, dataloaders_test, learned_tasks, net):
 
         anomaly_score = np.concatenate(test_z, axis=0)
         roc_auc = roc_auc_score(is_anomaly, anomaly_score)
-        all_roc_auc.append(roc_auc)
+        all_roc_auc.append(roc_auc * len(learned_task))
+        task_num += len(learned_task)
         print('data_type:', learned_task, 'auc:', roc_auc, '**' * 11)
 
         eval_task_wise_scores.append(anomaly_score)
         eval_task_wise_scores_np = np.concatenate(eval_task_wise_scores)
         eval_task_wise_labels.append(is_anomaly)
         eval_task_wise_labels_np = np.concatenate(eval_task_wise_labels)
-    print('mean_auc:', np.mean(all_roc_auc), '**' * 11)
+    print('mean_auc:', np.sum(all_roc_auc) / task_num, '**' * 11)
 
     if args.eval.visualization:
         name = f'{args.model.method}_task{len(learned_tasks)}_epoch{epoch}'
@@ -55,6 +57,7 @@ def csflow_eval(args, epoch, dataloaders_test, learned_tasks, net):
 def revdis_eval(args, epoch, dataloaders_test, learned_tasks, net):
     all_roc_auc = []
     eval_task_wise_scores, eval_task_wise_labels = [], []
+    task_num = 0
     for idx, (dataloader_test, learned_task) in enumerate(zip(dataloaders_test, learned_tasks)):
         gt_list_sp, pr_list_sp = [], []
         with torch.no_grad():
@@ -70,14 +73,15 @@ def revdis_eval(args, epoch, dataloaders_test, learned_tasks, net):
                 pr_list_sp.append(np.max(anomaly_map))
 
         roc_auc = roc_auc_score(gt_list_sp, pr_list_sp)
-        all_roc_auc.append(roc_auc)
+        all_roc_auc.append(roc_auc * len(learned_task))
+        task_num += len(learned_task)
         print('data_type:', learned_task, 'auc:', roc_auc, '**' * 11)
 
         eval_task_wise_scores.append(pr_list_sp)
         eval_task_wise_scores_np = np.concatenate(eval_task_wise_scores)
         eval_task_wise_labels.append(gt_list_sp)
         eval_task_wise_labels_np = np.concatenate(eval_task_wise_labels)
-    print('mean_auc:', np.mean(all_roc_auc), '**' * 11)
+    print('mean_auc:', np.sum(all_roc_auc) / task_num, '**' * 11)
 
     if args.eval.visualization:
         name = f'{args.model.method}_task{len(learned_tasks)}_epoch{epoch}'
@@ -94,6 +98,7 @@ def eval_model(args, epoch, dataloaders_test, learned_tasks, net, density):
         revdis_eval(args, epoch, dataloaders_test, learned_tasks, net)
     else:
         all_roc_auc, all_embeds, all_labels = [], [], []
+        task_num = 0
         for idx, (dataloader_test,  learned_task) in enumerate(zip(dataloaders_test, learned_tasks)):
             labels, embeds, logits = [], [], []
             with torch.no_grad():
@@ -112,7 +117,8 @@ def eval_model(args, epoch, dataloaders_test, learned_tasks, net, density):
             elif args.eval.eval_classifier == 'head':
                 fpr, tpr, _ = roc_curve(labels, logits)
             roc_auc = auc(fpr, tpr)
-            all_roc_auc.append(roc_auc)
+            all_roc_auc.append(roc_auc * len(learned_task))
+            task_num += len(learned_task)
             all_embeds.append(embeds)
             all_labels.append(labels)
             print('data_type:', learned_task[:], 'auc:', roc_auc, '**' * 11)
@@ -128,7 +134,7 @@ def eval_model(args, epoch, dataloaders_test, learned_tasks, net, density):
                                   thresh=thresh, interval=interval,
                                   name=name, save_path=his_save_path)
 
-        print('mean_auc:', np.mean(all_roc_auc), '**' * 11)
+        print('mean_auc:', np.sum(all_roc_auc) / task_num, '**' * 11)
 
 
 if __name__ == "__main__":
